@@ -34,8 +34,8 @@ function(find_and_configure_cuml VERSION)
         _get_update_disconnected_state(cuml ${VERSION} UPDATE_DISCONNECTED)
         CPMFindPackage(NAME     cuml
             VERSION             ${VERSION}
-            GIT_REPOSITORY      https://github.com/rapidsai/cuml.git
-            GIT_TAG             branch-${MAJOR_AND_MINOR}
+            GIT_REPOSITORY      https://github.com/AjayThorve/cuml.git
+            GIT_TAG             fea/umap-refine
             GIT_SHALLOW         TRUE
             ${UPDATE_DISCONNECTED}
             SOURCE_SUBDIR       cpp

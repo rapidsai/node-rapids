@@ -20,11 +20,14 @@
 #include "cuml/manifold/umapparams.hpp"
 
 #include <node_cudf/column.hpp>
+#include <node_cuml/coo.hpp>
 #include <nv_node/objectwrap.hpp>
 #include <nv_node/utilities/args.hpp>
 
 #include <cuml/common/device_buffer.hpp>
+
 #include <raft/handle.hpp>
+#include "raft/sparse/coo.cuh"
 
 #include <napi.h>
 
@@ -64,6 +67,20 @@ struct UMAP : public EnvLocalObjectWrap<UMAP> {
            bool convert_dtype,
            DeviceBuffer::wrapper_t const& embeddings);
 
+  void refine(DeviceBuffer::wrapper_t const& X,
+              cudf::size_type n_samples,
+              cudf::size_type n_features,
+              DeviceBuffer::wrapper_t const& y,
+              COO::wrapper_t const& coo,
+              bool convert_dtype,
+              DeviceBuffer::wrapper_t const& embeddings);
+
+  COO::wrapper_t get_graph(DeviceBuffer::wrapper_t const& X,
+                           cudf::size_type n_samples,
+                           cudf::size_type n_features,
+                           DeviceBuffer::wrapper_t const& y,
+                           bool convert_dtype);
+
   void transform(DeviceBuffer::wrapper_t const& X,
                  cudf::size_type n_samples,
                  cudf::size_type n_features,
@@ -77,8 +94,9 @@ struct UMAP : public EnvLocalObjectWrap<UMAP> {
 
  private:
   ML::UMAPParams params_{};
-  Napi::Value get_embeddings(Napi::CallbackInfo const& info);
   Napi::Value fit(Napi::CallbackInfo const& info);
+  Napi::Value refine(Napi::CallbackInfo const& info);
+  Napi::Value get_graph(Napi::CallbackInfo const& info);
   Napi::Value fit_sparse(Napi::CallbackInfo const& info);
   Napi::Value transform(Napi::CallbackInfo const& info);
   Napi::Value transform_sparse(Napi::CallbackInfo const& info);

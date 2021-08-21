@@ -6,6 +6,7 @@
   "packages": [
     "modules/*",
     "modules/demo/graph",
+    "modules/demo/umap",
     "modules/demo/luma",
     "modules/demo/spatial",
     "modules/demo/ssr",

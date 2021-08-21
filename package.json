@@ -57,6 +57,7 @@
     "modules/demo/xterm",
     "modules/demo/ipc/*",
     "modules/demo/deck/*",
+    "modules/demo/umap",
     "modules/demo/tfjs/*",
     "modules/demo/client-server"
   ],
