@@ -14,7 +14,8 @@
 
 import {loadNativeModule} from '@rapidsai/core';
 
-import {isElectron} from './iselectron';
+// import {isElectron} from './iselectron';
 
-export const gl = loadNativeModule<any>(module, `node_webgl${isElectron() ? '_electron' : ''}`);
+// export const gl = loadNativeModule<any>(module, `node_webgl${isElectron() ? '_electron' : ''}`);
+export const gl = loadNativeModule<any>(module, `node_webgl`);
 export default gl;

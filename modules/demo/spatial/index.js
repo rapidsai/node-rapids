@@ -14,24 +14,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-require('segfault-handler').registerHandler('./crash.log');
+module.exports = () => {
 
-require('@babel/register')({
-  cache: false,
-  babelrc: false,
-  cwd: __dirname,
-  presets: [
-    ["@babel/preset-env", { "targets": { "node": "current" } }],
-    ['@babel/preset-react', { "useBuiltIns": true }]
-  ]
-});
+  require('segfault-handler').registerHandler('./crash.log');
 
-// Change cwd to the example dir so relative file paths are resolved
-process.chdir(__dirname);
+  require('@babel/register')({
+    cache: false,
+    babelrc: false,
+    cwd: __dirname,
+    presets: [
+      ["@babel/preset-env", { "targets": { "node": "current" } }],
+      ['@babel/preset-react', { "useBuiltIns": true }]
+    ]
+  });
 
-const { createReactWindow } = require('@nvidia/glfw');
-module.exports = createReactWindow(`${__dirname}/app.js`, true);
+  // Change cwd to the example dir so relative file paths are resolved
+  process.chdir(__dirname);
+
+  const { RapidsJSDOM } = require('@rapidsai/jsdom');
+  const { window } = RapidsJSDOM.fromReactComponent({}, './app.js');
+  window.addEventListener('close', () => process.exit(0), { once: true });
+};
 
 if (require.main === module) {
-  module.exports.open({ transparent: false });
+  module.exports();
 }

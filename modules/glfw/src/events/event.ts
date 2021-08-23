@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {DOMWindow} from 'jsdom';
 import {Observable, Observer} from 'rxjs';
 
 import {GLFWModifierKey} from '../glfw';
@@ -60,8 +61,8 @@ export function glfwCallbackAsObservable<C extends SetGLFWCallback>(setCallback:
   });
 }
 
-export function windowCallbackAsObservable<C extends SetWindowCallback>(setCallback: C,
-                                                                        window: GLFWDOMWindow) {
+export function windowCallbackAsObservable<C extends SetWindowCallback>(
+  setCallback: C, window: GLFWDOMWindow|DOMWindow) {
   type Args = WindowCallbackArgs<C>;
   return new Observable<Args>((observer: Observer<Args>) => {
     const next = (..._: Args) => observer.next(_);

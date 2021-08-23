@@ -13,7 +13,7 @@
   "dependencies": {
     "@luma.gl/constants": "8.5.4",
     "@luma.gl/core": "8.5.4",
-    "math.gl": "3.5.3",
+    "math.gl": "3.5.4",
     "mjolnir.js": "2.5.2"
   },
   "esm": {

@@ -1,6 +1,4 @@
-#!/usr/bin/env -S node -r esm
-
-// Copyright (c) 2020, NVIDIA CORPORATION.
+// Copyright (c) 2021, NVIDIA CORPORATION.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,21 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-require('segfault-handler').registerHandler('./crash.log');
+import {RapidsJSDOM} from '@rapidsai/jsdom';
+import * as jsdom from 'jsdom';
 
-require('@babel/register')({
-  cache: false,
-  babelrc: false,
-  cwd: __dirname,
-  presets: [
-    ['@babel/preset-env', { 'targets': { 'node': 'current' } }],
-    ['@babel/preset-react', { 'useBuiltIns': true }]
-  ]
+export let globalWindow: jsdom.DOMWindow;
+
+beforeAll(() => { ({window: globalWindow} = new RapidsJSDOM({module: require.main})); });
+afterAll(() => {
+  if (globalWindow) {  //
+    globalWindow.dispatchEvent(new globalWindow.CloseEvent('close'));
+  }
 });
-
-const { createReactWindow } = require('@nvidia/glfw');
-module.exports = createReactWindow(`${__dirname}/app.js`, true);
-
-if (require.main === module) {
-  module.exports.open({ transparent: false });
-}

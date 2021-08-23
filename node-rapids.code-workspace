@@ -83,6 +83,7 @@
         "C_Cpp.configurationWarnings": "Disabled",
         "C_Cpp.autoAddFileAssociations": false,
         "C_Cpp.vcpkg.enabled": false,
+        "debug.terminal.clearBeforeReusing": true,
         // Configure ESLint plugin
         "eslint.debug": true,
         "eslint.nodeEnv": "production",
@@ -203,7 +204,7 @@
             "**/build/**": true,
             "**/.cache/**": true,
             "**/.cmake-js/**": true,
-            "**/node_modules/**": true
+            // "**/node_modules/**": true
         },
         "typescript.tsdk": "node-rapids/node_modules/typescript/lib"
     },

@@ -14,26 +14,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-require('segfault-handler').registerHandler('./crash.log');
+module.exports = function () {
 
-require('@babel/register')({
-  cache: false,
-  babelrc: false,
-  cwd: __dirname,
-  presets: [
-    ['@babel/preset-env', { 'targets': { 'node': 'current' } }],
-    ['@babel/preset-react', { 'useBuiltIns': true }]
-  ]
-});
+  require('segfault-handler').registerHandler('./crash.log');
 
-const { createModuleWindow } = require('@nvidia/glfw');
-const lesson = require('path').join(__dirname, `lessons`, process.argv[2], `app.js`);
+  require('@babel/register')({
+    cache: false,
+    babelrc: false,
+    cwd: __dirname,
+    presets: [
+      ['@babel/preset-env', { 'targets': { 'node': 'current' } }],
+      ['@babel/preset-react', { 'useBuiltIns': true }]
+    ]
+  });
 
-// Change cwd to the example dir so relative file paths are resolved
-process.chdir(require('path').parse(lesson).dir);
+  // Change cwd to the example dir so relative file paths are resolved
+  process.chdir(require('path').join(__dirname, `lessons`, process.argv[2]));
 
-module.exports = createModuleWindow(lesson, true);
+  const { RapidsJSDOM } = require('@rapidsai/jsdom');
+  const { window } = new RapidsJSDOM();
+  window.evalFn(() => require(`./app.js`));
+}
 
 if (require.main === module) {
-  module.exports.open({ transparent: false });
+  module.exports();
 }

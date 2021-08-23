@@ -12,7 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-test('nothing', () => {
-  // stub test to make sure the debugger works
-  debugger;
+import {globalWindow} from './utils';
+
+describe('Window', () => {
+  test('window.ImageData is from the canvas module',
+       () => { expect(globalWindow.ImageData).toBe(require('canvas').ImageData); });
+
+  test('has an `id` property for the GLFW window',
+       () => { expect(typeof globalWindow.id === 'number').toBeTruthy(); });
 });

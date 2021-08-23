@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {DOMWindow} from 'jsdom';
 import {map, publish, refCount} from 'rxjs/operators';
 
 import {glfw} from '../glfw';
@@ -19,14 +20,14 @@ import {GLFWDOMWindow} from '../jsdom/window';
 
 import {GLFWEvent, windowCallbackAsObservable} from './event';
 
-export function dndEvents(window: GLFWDOMWindow) {
+export function dndEvents(window: GLFWDOMWindow|DOMWindow) {
   return windowCallbackAsObservable(glfw.setDropCallback, window)
     .pipe(map(([, ...rest]) => GLFWDndEvent.create(window, ...rest)))
     .pipe(publish(), refCount());
 }
 
 export class GLFWDndEvent extends GLFWEvent {
-  public static create(window: GLFWDOMWindow, files: string[]) {
+  public static create(window: GLFWDOMWindow|DOMWindow, files: string[]) {
     const evt  = new GLFWDndEvent('drop');
     evt.target = window;
     evt._files = files;

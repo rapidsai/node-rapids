@@ -14,13 +14,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-require('segfault-handler').registerHandler('./crash.log');
+module.exports = function () {
+  require('segfault-handler').registerHandler('./crash.log');
 
-const { createWindow } = require('@nvidia/glfw');
-module.exports = createWindow(createXTermJS, true);
+  const { RapidsJSDOM } = require('@rapidsai/jsdom');
+  const { window } = new RapidsJSDOM();
+  window.evalFn(createXTermJS);
 
-if (require.main === module) {
-  module.exports.open({ transparent: false });
 }
 
 function createXTermJS(props = {}) {
@@ -76,4 +76,8 @@ function createXTermJS(props = {}) {
     terminal.prompt();
     return terminal;
   }
+}
+
+if (require.main === module) {
+  module.exports();
 }

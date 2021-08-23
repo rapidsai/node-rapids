@@ -14,8 +14,7 @@ RUN rm /home/node/wrtc-0.4.7-dev.tgz           \
     /opt/rapids/node/build/rapidsai-cudf-*.tgz \
     /opt/rapids/node/build/rapidsai-cuml-*.tgz \
     . \
- && npm install --production --omit dev --omit peer --omit optional --legacy-peer-deps --force *.tgz \
- && npm dedupe  --production --omit dev --omit peer --omit optional --legacy-peer-deps --force
+ && npm install --production --omit dev --omit peer --omit optional --legacy-peer-deps --force *.tgz
 
 
 FROM ${FROM_IMAGE}
