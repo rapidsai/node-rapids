@@ -49,14 +49,19 @@ void ContextWrapper::add_to_cache(int32_t const& node_id,
                                   std::string const& ctx_token,
                                   std::string const& message_id,
                                   std::vector<std::string> const& column_names,
-                                  cudf::table_view const& table_view) {
-  this->_transport_out.Value()->add_to_cache(
-    node_id, src_ral_id, dst_ral_id, ctx_token, message_id, column_names, table_view);
+                                  cudf::table_view const& table_view,
+                                  bool const& use_transport_in) {
+  use_transport_in
+    ? this->_transport_in.Value()->add_to_cache(
+        node_id, src_ral_id, dst_ral_id, ctx_token, message_id, column_names, table_view)
+    : this->_transport_out.Value()->add_to_cache(
+        node_id, src_ral_id, dst_ral_id, ctx_token, message_id, column_names, table_view);
 }
 
 std::tuple<std::vector<std::string>, std::unique_ptr<cudf::table>> ContextWrapper::pull_from_cache(
-  std::string const& message_id) {
-  return this->_transport_in.Value()->pull_from_cache(message_id);
+  std::string const& message_id, bool const& use_transport_in) {
+  return use_transport_in ? this->_transport_in.Value()->pull_from_cache(message_id)
+                          : this->_transport_out.Value()->pull_from_cache(message_id);
 }
 
 }  // namespace nv

@@ -13,6 +13,7 @@
     "modules/demo/deck/*",
     "modules/demo/ipc/*",
     "modules/demo/tfjs/*",
-    "modules/demo/client-server"
+    "modules/demo/client-server",
+    "modules/demo/blazingcluster-server"
   ]
 }

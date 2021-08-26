@@ -49,6 +49,7 @@ export declare class Context {
                    configOptions: Record<string, unknown>,
                    sql: string,
                    currentTimestamp: string): ExecutionGraphWrapper;
+  sendToCache(ralId: number, ctxToken: number, messageId: string, df: DataFrame): void;
   pullFromCache(messageId: string): {names: string[], table: Table};
 }
 

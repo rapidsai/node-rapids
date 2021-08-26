@@ -29,7 +29,7 @@ fi
 
 if [[ "$DEMO" == "" ]]; then
     DEMOS="
-    $(echo modules/demo/{graph,luma,spatial,ssr,xterm,client-server}/package.json)
+    $(echo modules/demo/{graph,luma,spatial,ssr,xterm,client-server,blazingcluster-server}/package.json)
     $(find modules/demo/{deck,tfjs,ipc} -maxdepth 2 -type f -name 'package.json')
     ";
     DEMOS="$(echo -e "$DEMOS" | grep -v node_modules | sort -Vr)";

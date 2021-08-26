@@ -56,10 +56,11 @@ struct ContextWrapper : public EnvLocalObjectWrap<ContextWrapper> {
                     std::string const& ctx_token,
                     std::string const& message_id,
                     std::vector<std::string> const& column_names,
-                    cudf::table_view const& table_view);
+                    cudf::table_view const& table_view,
+                    bool const& use_transport_in);
 
   std::tuple<std::vector<std::string>, std::unique_ptr<cudf::table>> pull_from_cache(
-    std::string const& message_id);
+    std::string const& message_id, bool const& use_transport_in);
 
  private:
   int32_t _port{};

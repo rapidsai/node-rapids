@@ -85,6 +85,7 @@ ContextWrapper::wrapper_t initialize(Napi::Env const& env, NapiToCPP::Object con
                                   initial_pool_size,
                                   maximum_pool_size,
                                   enable_logging);
+
   return ContextWrapper::New(env, ral_id, init_result, ucp_context);
 }
 

@@ -96,7 +96,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     # UCX runtime dependencies
     libibverbs-dev librdmacm-dev libnuma-dev libhwloc-dev \
  # Install UCX
- && git clone --depth 1 --branch v1.9.x https://github.com/openucx/ucx.git /tmp/ucx \
+ && git clone --depth 1 --branch v1.10.x https://github.com/openucx/ucx.git /tmp/ucx \
  && curl -o /tmp/cuda-alloc-rcache.patch \
          -L https://raw.githubusercontent.com/rapidsai/ucx-split-feedstock/11ad7a3c1f25514df8064930f69c310be4fd55dc/recipe/cuda-alloc-rcache.patch \
  && cd /tmp/ucx && git apply /tmp/cuda-alloc-rcache.patch && rm /tmp/cuda-alloc-rcache.patch \

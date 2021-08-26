@@ -96,7 +96,7 @@ Napi::Value ExecutionGraph::send_to(Napi::CallbackInfo const& info) {
   std::string ctx_token = std::to_string(query_context->getContextToken());
 
   _context.Value()->add_to_cache(
-    node_id, src_ral_id, dst_ral_id, ctx_token, message_id, _names, first_table->view());
+    node_id, src_ral_id, dst_ral_id, ctx_token, message_id, _names, first_table->view(), false);
 
   return this->Value();
 }
