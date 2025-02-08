@@ -29,7 +29,7 @@ Due to native dependency distribution complexity, pre-packaged builds of the `no
 
 See [DEVELOP.md](https://github.com/rapidsai/node/blob/main/DEVELOP.md) for details on setting up a local dev environment and building the code.
 
-We want your input! Join us in the [#node-rapids channel](https://rapids-goai.slack.com/archives/C0237JMVBRS) in the [RAPIDS-GoAI Slack workspace](https://rapids-goai.slack.com).
+We want your input! Join us in the [#node-rapids channel](https://rapids-goai.slack.com/archives/C0237JMVBRS) in the [RAPIDS-GoAI Slack workspace](https://rapids.ai/slack-invite).
 
 ## Tracking Progress
 
