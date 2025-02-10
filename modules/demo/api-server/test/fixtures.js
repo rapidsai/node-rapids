@@ -163,9 +163,45 @@ const json_bad_map = {
     }`
 };
 
+const csv_base = {
+  'csv_base.csv':
+    `Index,Name,Int,Float
+     0,"bob",1,1.0
+     1,"george",2,2.0
+     2,"sam",3,3.0`
+};
+
+const csv_particles = {
+  'csv_particles.csv':
+    `Index,Longitude,Latitude
+    0, -105, 40
+    1, -106, 41
+    2, -107, 42
+    3, -108, 43
+    4, -109, 44
+    5, -110, 45`
+};
+
+const csv_quadtree = {
+  'csv_quadtree.csv':
+    `Index,x,y
+  0,-4.0,4.0
+  1,-3.0,3.0
+  2,-2.0,2.0
+  3,-1.0,1.0
+  4,0.0,0.0
+  5,1.0,-1.0
+  6,2.0,-2.0
+  7,3.0,-3.0
+  8,4.0,-4.0`
+};
+
 module.exports = {
   json_good: json_good,
   json_large: json_large,
   json_out_of_order: json_out_of_order,
   json_bad_map: json_bad_map,
+  csv_base: csv_base,
+  csv_particles: csv_particles,
+  csv_quadtree: csv_quadtree
 };

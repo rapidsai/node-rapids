@@ -29,5 +29,5 @@ const env = {
 };
 
 spawnSync(process.execPath,
-          [fastify, 'start', '-l', 'info', '-P', '-p', '3010', '-w', 'app.js'],
+          [fastify, 'start', '-l', 'info', '--ignore-watch', '-P', '-p', '3010', 'app.js'],
           {env, cwd: __dirname, stdio: 'inherit'});

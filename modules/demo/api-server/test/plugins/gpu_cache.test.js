@@ -20,13 +20,14 @@ const Support  = require('../../plugins/support')
 const fixtures = require('../fixtures.js');
 const gpuCache = require('../../util/gpu_cache.js');
 
-test('clearCachedGPUData()', async t => {
-  await gpuCache.setDataframe('bob', 5);
-  const result = await gpuCache.getDataframe('bob');
+test('set/getData', async t => {
+  await gpuCache.cacheObject('bob', 5);
+  const result = await gpuCache.getData('bob');
+  await gpuCache.clearDataframes();
   t.equal(result, 5);
 });
 
-test('read_large_graph_demo', async t => {
+test('readLargeGraphDemo', async t => {
   const dir    = t.testdir(fixtures);
   const result = await gpuCache.readLargeGraphDemo(dir + '/json_large/json_large.txt');
   await gpuCache.clearDataframes();
@@ -38,4 +39,37 @@ test('readGraphology', async t => {
   const result = await gpuCache.readGraphology(dir + '/json_good/json_good.txt');
   await gpuCache.clearDataframes();
   t.same(Object.keys(result), ['nodes', 'edges', 'tags', 'clusters']);
+});
+
+test('readCSV', {only: true}, async t => {
+  const dir    = t.testdir(fixtures);
+  const path   = dir + '/csv_base/csv_base.csv';
+  const result = await gpuCache.readCSV({
+    header: 0,
+    sourceType: 'files',
+    sources: [path],
+  });
+  t.same(result.names, ['Index', 'Name', 'Int', 'Float']);
+});
+
+test('listDataframes', async t => {
+  await gpuCache.cacheObject('bob', 5);
+  await gpuCache.cacheObject('george', 6);
+  const result = await gpuCache.listDataframes();
+  await gpuCache.clearDataframes();
+  t.same(result, ['bob', 'george']);
+});
+
+test('clearDataframes', async t => {
+  await gpuCache.cacheObject('bob', 5);
+  await gpuCache.cacheObject('george', 6);
+  await gpuCache.clearDataframes();
+  const result = await gpuCache.listDataframes();
+  t.same(result, []);
+});
+
+test('_setPathForTesting', {only: true}, async t => {
+  await gpuCache._setPathForTesting('abcdef');
+  const result = await gpuCache.publicPath();
+  t.same(result, 'abcdef');
 });

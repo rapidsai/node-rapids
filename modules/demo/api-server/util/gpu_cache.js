@@ -14,12 +14,16 @@
 
 const {Bool8, Utf8String, Int32, Int64, DataFrame, Series, Float32, Float64} =
   require('@rapidsai/cudf');
+const Path = require('path');
 
 let timeout  = -1;
 let datasets = {};
 
 function clearCachedGPUData() {
-  for (const key in datasets) { datasets[key] = null; }
+  for (const key in datasets) {
+    const dataset = datasets[key];
+    datasets[key] = null;
+  }
 };
 
 function json_key_attributes_to_dataframe(str) {
@@ -36,7 +40,7 @@ function json_key_attributes_to_dataframe(str) {
   });
   const result = new DataFrame(arr);
   return result;
-}
+};
 
 function json_aos_to_dataframe(str, columns, dtypes) {
   let arr = {};
@@ -48,7 +52,7 @@ function json_aos_to_dataframe(str, columns, dtypes) {
   });
   const result = new DataFrame(arr);
   return result;
-}
+};
 
 function json_aoa_to_dataframe(str, dtypes) {
   let arr            = {};
@@ -61,33 +65,25 @@ function json_aoa_to_dataframe(str, dtypes) {
   });
   const result = new DataFrame(arr);
   return result;
-}
+};
+
+let _publicPath = Path.join(__dirname, '../public');
+
+const cacheObject = async (name, data) => {
+  if (timeout) { clearTimeout(timeout); }
+  timeout = setTimeout(clearCachedGPUData, 10 * 60 * 1000);
+  if (datasets === null) {
+    datasets = {};
+  }
+  datasets[name] = data;
+};
 
 module.exports = {
-  async setDataframe(name, dataframe) {
-    if (timeout) { clearTimeout(timeout); }
-    timeout = setTimeout(clearCachedGPUData, 10 * 60 * 1000);
-    if (datasets === null) {
-      datasets = {};
-    }
-    datasets[name] = dataframe;
-  },
-
-  async getDataframe(name) { return datasets[name]; },
-
-  async listDataframes() { return datasets != null ? Object.keys(datasets) : []; },
-
-  async clearDataframes() {
-    clearCachedGPUData();
-    clearTimeout(timeout);
-    datasets = null;
-  },
-
   async readLargeGraphDemo(path) {
     console.log('readLargeGraphDemo');
     const dataset = Series.readText(path, '');
     let split     = dataset.split('"options":');
-    if (split.length <= 1) { throw 'Bad readLargeGraphDemo format: options not found.'; };
+    if (split.length <= 1) { throw 'Bad readLargeGraphDemo format: options not found.'; }
     const toptions = split.gather([1], false);
     let rest       = split.gather([0], false);
     split          = rest.split('"edges":');
@@ -143,5 +139,26 @@ module.exports = {
       ]);
     const edges = json_aoa_to_dataframe(tedges, [new Utf8String, new Utf8String]);
     return {nodes: nodes, edges: edges, tags: tags, clusters: clusters};
+  },
+
+  async cacheObject(name, data) { cacheObject(name, data); },
+
+  async getData(name) { return datasets != null ? datasets[name] : undefined; },
+  getDataSync(name) { return datasets != null ? datasets[name] : undefined; },
+
+  async listDataframes() { return datasets != null ? Object.keys(datasets) : []; },
+
+  async clearDataframes() {
+    clearCachedGPUData();
+    clearTimeout(timeout);
+    datasets = null;
+  },
+
+  _setPathForTesting(path) { _publicPath = path; },
+  publicPath() { return _publicPath; },
+
+  async readCSV(options) {
+    const result = await DataFrame.readCSV(options);
+    return result;
   }
 }

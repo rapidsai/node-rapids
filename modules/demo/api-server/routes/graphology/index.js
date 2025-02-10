@@ -28,13 +28,13 @@ const root_schema = require('../../util/schema.js');
 module.exports = async function(fastify, opts) {
   fastify.register(arrowPlugin);
   fastify.register(fastifyCors, {origin: 'http://localhost:3001'});
-  fastify.decorate('setDataframe', gpu_cache.setDataframe);
-  fastify.decorate('getDataframe', gpu_cache.getDataframe);
+  fastify.decorate('cacheObject', gpu_cache.cacheObject);
+  fastify.decorate('getData', gpu_cache.getData);
   fastify.decorate('listDataframes', gpu_cache.listDataframes);
   fastify.decorate('readGraphology', gpu_cache.readGraphology);
   fastify.decorate('readLargeGraphDemo', gpu_cache.readLargeGraphDemo);
   fastify.decorate('clearDataFrames', gpu_cache.clearDataframes);
-  fastify.get('/', async function(request, reply) { return root_schema; });
+  fastify.get('/', async function(request, reply) { return root_schema['graphology']; });
 
   fastify.route({
     method: 'POST',
@@ -76,9 +76,9 @@ module.exports = async function(fastify, opts) {
           result.success = true;
           try {
             const graphology = await fastify.readLargeGraphDemo(path);
-            await fastify.setDataframe('nodes', graphology['nodes']);
-            await fastify.setDataframe('edges', graphology['edges']);
-            await fastify.setDataframe('options', graphology['options']);
+            await fastify.cacheObject('nodes', graphology['nodes']);
+            await fastify.cacheObject('edges', graphology['edges']);
+            await fastify.cacheObject('options', graphology['options']);
             result.message = 'File read onto GPU.';
           } catch (e) {
             result.success    = false;
@@ -109,6 +109,11 @@ module.exports = async function(fastify, opts) {
       }
     },
     handler: async (request, reply) => {
+      /**
+       * /graphology/read_json reads a graphology formatted json file from
+       * public storage, storing it in the `nodes`, `edges`, `clusters`, and
+       * `tags` DataFrames.
+       */
       const query = request.query;
       let result  = {
         'params': JSON.stringify(query),
@@ -135,10 +140,10 @@ module.exports = async function(fastify, opts) {
           result.success = true;
           try {
             const graphology = await fastify.readGraphology(path);
-            await fastify.setDataframe('nodes', graphology['nodes']);
-            await fastify.setDataframe('edges', graphology['edges']);
-            await fastify.setDataframe('clusters', graphology['clusters']);
-            await fastify.setDataframe('tags', graphology['tags']);
+            await fastify.cacheObject('nodes', graphology['nodes']);
+            await fastify.cacheObject('edges', graphology['edges']);
+            await fastify.cacheObject('clusters', graphology['clusters']);
+            await fastify.cacheObject('tags', graphology['tags']);
             result.message = 'File read onto GPU.';
           } catch (e) {
             result.success    = false;
@@ -157,23 +162,16 @@ module.exports = async function(fastify, opts) {
 
   fastify.route({
     method: 'GET',
-    url: '/list_tables',
-    handler: async (request, reply) => {
-      let message = 'Error';
-      let result  = {success: false, message: message};
-      const list  = await fastify.listDataframes();
-      return list;
-    }
-  });
-
-  fastify.route({
-    method: 'GET',
     url: '/get_column/:table/:column',
     schema: {querystring: {table: {type: 'string'}, 'column': {type: 'string'}}},
     handler: async (request, reply) => {
+      /**
+       * /graphology/get_column/:table/:column returns a column of a DataFrame
+       * in the GPU cache as an Arrow Table.
+       */
       let message = 'Error';
       let result  = {'params': JSON.stringify(request.params), success: false, message: message};
-      const table = await fastify.getDataframe(request.params.table);
+      const table = await fastify.getData(request.params.table);
       if (table == undefined) {
         result.message = 'Table not found';
         await reply.code(404).send(result);
@@ -206,9 +204,13 @@ module.exports = async function(fastify, opts) {
     url: '/get_table/:table',
     schema: {querystring: {table: {type: 'string'}}},
     handler: async (request, reply) => {
+      /**
+       * /graphology/get_table/:table returns a DataFrame from the GPU cache
+       * as an Arrow Table.
+       */
       let message = 'Error';
       let result  = {'params': JSON.stringify(request.params), success: false, message: message};
-      const table = await fastify.getDataframe(request.params.table);
+      const table = await fastify.getData(request.params.table);
       if (table == undefined) {
         result.message = 'Table not found';
         await reply.code(404).send(result);
@@ -223,9 +225,13 @@ module.exports = async function(fastify, opts) {
     method: 'GET',
     url: '/nodes/bounds',
     handler: async (request, reply) => {
+      /**
+       * /graphology/nodes/bounds returns the min/max of the x and y columns
+       * of the `nodes` DataFrame.
+       */
       let message = 'Error';
       let result  = {success: false, message: message};
-      const df    = await fastify.getDataframe('nodes');
+      const df    = await fastify.getData('nodes');
       if (df == undefined) {
         result.message = 'Table not found';
         await reply.code(404).send(result);
@@ -248,9 +254,13 @@ module.exports = async function(fastify, opts) {
     method: 'GET',
     url: '/nodes',
     handler: async (request, reply) => {
+      /**
+       * /graphology/nodes returns the `nodes` DataFrame, tiled into a single column
+       * with offset x,y,scale,color values.
+       */
       let message = 'Error';
       let result  = {success: false, message: message};
-      const df    = await fastify.getDataframe('nodes');
+      const df    = await fastify.getData('nodes');
       if (df == undefined) {
         result.message = 'Table not found';
         await reply.code(404).send(result);
@@ -287,12 +297,16 @@ module.exports = async function(fastify, opts) {
     method: 'GET',
     url: '/edges',
     handler: async (request, reply) => {
+      /**
+       * /graphology/edges returns the edges table, tiled into a single column
+       * of x,y,size,color offset values.
+       */
       let message = 'Error';
       let result  = {success: false, message: message};
       /** @type DataFrame<{x: Float32, y: Float32}> */
-      const df = await fastify.getDataframe('nodes');
+      const df = await fastify.getData('nodes');
       /** @type DataFrame<{x: Int32, y: Int32}> */
-      const edges = await fastify.getDataframe('edges');
+      const edges = await fastify.getData('edges');
       if (df == undefined) {
         result.message = 'Table not found';
         await reply.code(404).send(result);
@@ -367,15 +381,6 @@ module.exports = async function(fastify, opts) {
           await reply.code(result.statusCode).send(result);
         }
       }
-    }
-  });
-
-  fastify.route({
-    method: 'POST',
-    url: '/release',
-    handler: async (request, reply) => {
-      await fastify.clearDataFrames();
-      await reply.code(200).send({message: 'OK'})
     }
   });
 }
