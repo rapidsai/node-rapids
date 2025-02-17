@@ -41,7 +41,7 @@
     "@types/parse5": "6.0.3",
     "canvas": "^2.11.0",
     "clone-deep": "4.0.1",
-    "cross-fetch": "3.1.4",
+    "cross-fetch": "3.1.5",
     "fetch-readablestream": "0.2.0",
     "jsdom": "16.6.0",
     "react": "17.0.2",
